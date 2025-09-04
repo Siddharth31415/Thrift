@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Campus Thrift</title>
+    <style>
+      :root {
+        --bg: #0f1115;
+        --surface: #151923;
+        --card: #1a2030;
+        --muted: #8a94a7;
+        --text: #e7ecf3;
+        --accent: #7c5cff;
+        --accent-2: #19c37d;
+        --danger: #ff5c7a;
+        --warning: #ffb020;
+        --border: #232938;
+        --chip: #1f2738;
+        --ad: #0e1a2b;
+        --shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+        --radius: 14px;
+        --radius-sm: 10px;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        background: linear-gradient(180deg, #0c0f16 0%, #0e1420 100%);
+        color: var(--text);
+        font-family: Inter, system-ui, Segoe UI, Arial, sans-serif;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        cursor: pointer;
+      }
+      img {
+        max-width: 100%;
+        display: block;
+      }
+
+      /* Layout */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(10px);
+        background: rgba(10, 12, 18, 0.6);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        justify-content: space-between;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 12px 16px;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 800;
+        letter-spacing: 0.2px;
+      }
+      .brand-badge {
+        width: 12px;
+        height: 12px;
+        border-radius: 4px;
+        background: linear-gradient(135deg, var(--accent), #52a8ff);
+      }
+      .tabs {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .tab {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: rgba(21, 25, 35, 0.7);
+        font-weight: 600;
+        color: var(--muted);
+      }
+      .tab.active {
+        color: var(--text);
+        border-color: #2f3a55;
+        background: linear-gradient(180deg, #182031, #121826);
+      }
+      .auth {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .chip {
+        background: var(--chip);
+        color: var(--muted);
+        border: 1px solid var(--border);
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-size: 12px;
+      }
+      .btn {
+        background: linear-gradient(135deg, var(--accent), #52a8ff);
+        border: none;
+        color: white;
+        padding: 9px 14px;
+        border-radius: 10px;
+        font-weight: 700;
+        box-shadow: 0 6px 14px rgba(124, 92, 255, 0.25);
+      }
+      .btn.secondary {
+        background: #1e2638;
+        border: 1px solid var(--border);
+        color: var(--text);
+        box-shadow: none;
+      }
+      .btn.danger {
+        background: linear-gradient(135deg, #ff5c7a, #ff7e97);
+      }
+      .btn.success {
+        background: linear-gradient(135deg, var(--accent-2), #3bd4a0);
+        color: #072015;
+      }
+      .btn.warning {
+        background: linear-gradient(135deg, #ffb020, #ffd36a);
+        color: #2b1a00;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 16px auto;
+        padding: 16px;
+      }
+      .grid {
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 1fr;
+      }
+      @media (min-width: 900px) {
+        .grid {
+          grid-template-columns: 300px 1fr;
+        }
+      }
+
+      /* Panels */
+      .panel {
+        background: linear-gradient(180deg, #141a28, #121826);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+      .panel-header {
+        padding: 14px 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .panel-body {
+        padding: 14px;
+      }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 10px 0;
+      }
+
+      /* Filters */
+      .filters {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .label {
+        font-size: 12px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+      }
+      input[type="text"],
+      input[type="number"],
+      input[type="tel"],
+      select,
+      textarea {
+        background: #0f1422;
+        border: 1px solid #1f2740;
+        color: var(--text);
+        padding: 10px;
+        border-radius: 10px;
+        outline: none;
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: #67728a;
+      }
+      .row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .chip-toggle {
+        padding: 8px 10px;
+        border: 1px solid #2a3450;
+        border-radius: 10px;
+        background: #131a2a;
+        color: #cdd6e9;
+        font-weight: 600;
+      }
+      .chip-toggle.active {
+        border-color: #3c4f80;
+        background: #1a2440;
+      }
+
+      /* Ads */
+      .ad {
+        background: linear-gradient(135deg, #0d1b2b, #0a1220);
+        border: 1px dashed #244;
+        color: #9fb7d6;
+        padding: 12px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      /* Cards */
+      .cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 720px) {
+        .cards {
+          grid-template-columns: 1fr 1fr 1fr;
+        }
+      }
+      .card {
+        background: linear-gradient(180deg, #151c2d, #121826);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      .thumb {
+        height: 160px;
+        background: #0d1220;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5f6b86;
+        font-weight: 800;
+        font-size: 14px;
+        position: relative;
+      }
+      .badge {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        background: #1c263f;
+        border: 1px solid #314168;
+        color: #cbd6f1;
+        font-size: 11px;
+        padding: 4px 8px;
+        border-radius: 999px;
+      }
+      .badge.boost {
+        background: linear-gradient(135deg, #ffe080, #ffb020);
+        color: #1f1400;
+        border: none;
+      }
+      .content {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .title {
+        font-weight: 800;
+      }
+      .meta {
+        font-size: 12px;
+        color: #9aa6c4;
+      }
+      .price {
+        font-weight: 900;
+      }
+      .actions {
+        margin-top: 8px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      /* Forms */
+      form .hint {
+        font-size: 12px;
+        color: #93a1c7;
+      }
+      .switch {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border: 1px solid #243050;
+        border-radius: 10px;
+        background: #11182a;
+      }
+      .switch input {
+        accent-color: #6d8cff;
+      }
+
+      /* Modals */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.6);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 100;
+      }
+      .modal {
+        max-width: 520px;
+        width: 92%;
+        background: linear-gradient(180deg, #141a28, #121826);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        box-shadow: var(--shadow);
+      }
+      .modal-header {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .modal-body {
+        padding: 14px;
+      }
+      .close {
+        background: #1a2236;
+        border: 1px solid var(--border);
+        color: #bdc7e2;
+        border-radius: 8px;
+        padding: 6px 10px;
+      }
+
+      /* Chat */
+      .chat-box {
+        height: 260px;
+        overflow: auto;
+        background: #0d1220;
+        border: 1px solid #1f2740;
+        border-radius: 12px;
+        padding: 10px;
+        margin-bottom: 10px;
+      }
+      .msg {
+        margin: 6px 0;
+        display: flex;
+      }
+      .msg.me {
+        justify-content: flex-end;
+      }
+      .bubble {
+        max-width: 70%;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: #1a2338;
+        border: 1px solid #2a3553;
+      }
+      .msg.me .bubble {
+        background: #1d2f4f;
+        border-color: #2f4976;
+      }
+      .chat-input {
+        display: flex;
+        gap: 8px;
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #121a2b;
+        border: 1px solid #273354;
+        color: #d6e1ff;
+        padding: 10px 14px;
+        border-radius: 10px;
+        display: none;
+        z-index: 200;
+      }
+
+      /* Hide pages */
+      .view {
+        display: none;
+      }
+      .view.active {
+        display: block;
+      }
+
+      /* Small helpers */
+      .muted {
+        color: var(--muted);
+      }
+      .spacer {
+        height: 8px;
+      }
+      .pill {
+        padding: 4px 8px;
+        border: 1px solid #2f3b5a;
+        border-radius: 999px;
+        font-size: 11px;
+        color: #a7b3d5;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="nav">
+        <div class="brand">
+          <div class="brand-badge"></div>
+          <div>Campus Thrift</div>
+          <div class="pill">Beta</div>
+        </div>
+        <div class="tabs" id="nav-tabs">
+          <a href="#" data-view="home" class="tab active">Home</a>
+          <a href="#" data-view="post" class="tab">Post</a>
+          <a href="#" data-view="profile" class="tab">Profile</a>
+          <a href="#" data-view="survey" class="tab">Survey</a>
+          <a href="#" data-view="admin" class="tab">Admin</a>
+        </div>
+        <div class="auth" id="auth-area">
+          <span class="chip" id="user-chip">Guest</span>
+          <button class="btn" id="btn-login">Sign in</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="grid">
+        <!-- Left panel: filters -->
+        <aside class="panel view active" id="filters">
+          <div class="panel-header">
+            <div>Browse</div>
+            <button class="btn secondary" id="clear-filters">Clear</button>
+          </div>
+          <div class="panel-body filters">
+            <div class="field">
+              <label class="label">Search</label>
+              <input
+                id="q"
+                type="text"
+                placeholder="Search items, e.g. hoodie, calculator..."
+              />
+            </div>
+
+            <div class="field">
+              <label class="label">Category</label>
+              <div class="row" id="cat-row"></div>
+            </div>
+
+            <div class="field">
+              <label class="label">Condition</label>
+              <div class="row">
+                <button class="chip-toggle" data-cond="">Any</button>
+                <button class="chip-toggle" data-cond="used">Used</button>
+                <button class="chip-toggle" data-cond="unused">Unused</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Hostel</label>
+              <div class="row">
+                <button class="chip-toggle" data-hostel="">All</button>
+                <button class="chip-toggle" data-hostel="boys">Boys</button>
+                <button class="chip-toggle" data-hostel="girls">Girls</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Price</label>
+              <div class="row">
+                <input
+                  id="minPrice"
+                  type="number"
+                  placeholder="Min"
+                  style="width: 48%"
+                />
+                <input
+                  id="maxPrice"
+                  type="number"
+                  placeholder="Max"
+                  style="width: 48%"
+                />
+              </div>
+              <div class="spacer"></div>
+              <label class="switch">
+                <input id="freeOnly" type="checkbox" /> <span>Free only</span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="label">Sort</label>
+              <select id="sortBy">
+                <option value="latest">Latest</option>
+                <option value="boost">Boosted first</option>
+                <option value="priceAsc">Price: Low to High</option>
+                <option value="priceDesc">Price: High to Low</option>
+              </select>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="ad">
+              <div>
+                <div style="font-weight: 800">Category Spotlight</div>
+                <div class="muted" style="font-size: 13px">
+                  Boost your listing to reach more students instantly.
+                </div>
+              </div>
+              <button class="btn warning" data-view="post">Boost</button>
+            </div>
+
+            <div class="field">
+              <label class="label">Safety & comfort</label>
+              <label class="switch">
+                <input id="filterComfort" type="checkbox" />
+                <span>Show only listings matching my comfort prefs</span>
+              </label>
+            </div>
+
+            <div class="field">
+              <label class="label">Location</label>
+              <button class="btn secondary" id="share-location">
+                Share approximate location
+              </button>
+              <div id="loc-status" class="muted" style="font-size: 12px">
+                Not shared
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Right panel: views -->
+        <section class="panel view active" id="home">
+          <div class="panel-header">
+            <div>Latest listings</div>
+            <div class="row">
+              <span class="chip" id="count-chip">0 items</span>
+              <button class="btn" data-view="post">Post item</button>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="cards" id="cards"></div>
+          </div>
+        </section>
+
+        <!-- Post view -->
+        <section class="panel view" id="post">
+          <div class="panel-header">
+            <div>Create listing</div>
+            <div class="muted" style="font-size: 12px">
+              Commission optional, free items welcome
+            </div>
+          </div>
+          <div class="panel-body">
+            <form id="post-form">
+              <div class="field">
+                <label class="label">Title</label>
+                <input
+                  required
+                  id="p-title"
+                  type="text"
+                  placeholder="e.g., Warm hoodie / Casio fx-991EX"
+                />
+              </div>
+              <div class="row">
+                <div class="field" style="flex: 1">
+                  <label class="label">Category</label>
+                  <select id="p-cat" required></select>
+                </div>
+                <div class="field" style="width: 160px">
+                  <label class="label">Condition</label>
+                  <select id="p-cond">
+                    <option value="used">Used</option>
+                    <option value="unused">Unused</option>
+                  </select>
+                </div>
+              </div>
+              <div class="row">
+                <div class="field" style="flex: 1">
+                  <label class="label">Price (₹)</label>
+                  <input id="p-price" type="number" min="0" placeholder="0" />
+                  <div class="hint">
+                    Set 0 or check “Free item” to give away.
+                  </div>
+                </div>
+                <div class="field" style="width: 180px">
+                  <label class="label">Free item</label>
+                  <label class="switch"
+                    ><input id="p-free" type="checkbox" />
+                    <span>Mark as free</span></label
+                  >
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Photos</label>
+                <input id="p-photos" type="file" accept="image/*" multiple />
+                <div class="hint">
+                  Upload up to 5 images (stored locally for demo)
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Description</label>
+                <textarea
+                  id="p-desc"
+                  rows="4"
+                  placeholder="Size, condition details, included accessories, pickup location..."
+                ></textarea>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="row">
+                <div class="field" style="flex: 1">
+                  <label class="label">Your hostel</label>
+                  <select id="p-hostel">
+                    <option value="boys">Boys</option>
+                    <option value="girls">Girls</option>
+                  </select>
+                </div>
+                <div class="field" style="flex: 1">
+                  <label class="label">Comfort preference</label>
+                  <select id="p-comfort">
+                    <option value="any">Comfortable meeting anyone</option>
+                    <option value="same">Prefer same hostel</option>
+                  </select>
+                  <div class="hint">Helps match buyer/seller comfort.</div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="field" style="flex: 1">
+                  <label class="label">Boost post</label>
+                  <label class="switch"
+                    ><input id="p-boost" type="checkbox" />
+                    <span>Feature at top (demo only)</span></label
+                  >
+                </div>
+                <div class="field" style="flex: 1">
+                  <label class="label">Share phone number</label>
+                  <label class="switch"
+                    ><input id="p-share-phone" type="checkbox" />
+                    <span>Visible after chat consent</span></label
+                  >
+                </div>
+              </div>
+
+              <div class="divider"></div>
+
+              <div class="row">
+                <button type="submit" class="btn success">Publish</button>
+                <button type="button" class="btn secondary" data-view="home">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Profile view -->
+        <section class="panel view" id="profile">
+          <div class="panel-header">
+            <div>My profile</div>
+            <button class="btn secondary" id="btn-logout">Sign out</button>
+          </div>
+          <div class="panel-body">
+            <div class="row">
+              <div class="field" style="flex: 1">
+                <label class="label">Username</label>
+                <input
+                  id="u-name"
+                  type="text"
+                  placeholder="Your display name"
+                />
+              </div>
+              <div class="field" style="flex: 1">
+                <label class="label"
+                  >College email (simulated Google login)</label
+                >
+                <input id="u-email" type="text" placeholder="you@thapar.edu" />
+              </div>
+            </div>
+            <div class="row">
+              <div class="field" style="flex: 1">
+                <label class="label">Phone (OTP demo)</label>
+                <div class="row">
+                  <input
+                    id="u-phone"
+                    type="tel"
+                    placeholder="10-digit number"
+                    style="flex: 1"
+                  />
+                  <button class="btn secondary" id="btn-send-otp">
+                    Send OTP
+                  </button>
+                </div>
+                <div class="row">
+                  <input
+                    id="u-otp"
+                    type="text"
+                    placeholder="Enter OTP"
+                    style="flex: 1"
+                  />
+                  <button class="btn success" id="btn-verify-otp">
+                    Verify
+                  </button>
+                </div>
+                <div id="otp-status" class="hint">Not verified</div>
+              </div>
+              <div class="field" style="flex: 1">
+                <label class="label">Comfort preference</label>
+                <select id="u-comfort">
+                  <option value="any">Comfortable meeting anyone</option>
+                  <option value="same">Prefer same hostel</option>
+                </select>
+                <div class="hint">Used by “match my comfort” filter.</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div style="font-weight: 800; margin-bottom: 8px">My listings</div>
+            <div id="my-listings" class="cards"></div>
+          </div>
+        </section>
+
+        <!-- Survey view -->
+        <section class="panel view" id="survey">
+          <div class="panel-header">
+            <div>Quick survey</div>
+            <div class="muted" style="font-size: 12px">
+              Help us shape the platform
+            </div>
+          </div>
+          <div class="panel-body">
+            <form id="survey-form">
+              <div class="field">
+                <label class="label"
+                  >Do you often buy/sell stuff on unofficial groups?</label
+                >
+                <div class="row">
+                  <label class="switch"
+                    ><input name="q1" value="yes" type="radio" />
+                    <span>Yes</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q1" value="no" type="radio" />
+                    <span>No</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q1" value="sometimes" type="radio" />
+                    <span>Sometimes</span></label
+                  >
+                </div>
+              </div>
+              <div class="field">
+                <label class="label"
+                  >If a formal platform is provided would you be
+                  interested?</label
+                >
+                <div class="row">
+                  <label class="switch"
+                    ><input name="q2" value="yes" type="radio" />
+                    <span>Yes</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q2" value="no" type="radio" />
+                    <span>No</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q2" value="maybe" type="radio" />
+                    <span>Maybe</span></label
+                  >
+                </div>
+              </div>
+              <div class="field">
+                <label class="label"
+                  >Comfortable wearing second-hand clothes?</label
+                >
+                <div class="row">
+                  <label class="switch"
+                    ><input name="q3" value="yes" type="radio" />
+                    <span>Yes</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q3" value="no" type="radio" />
+                    <span>No</span></label
+                  >
+                  <label class="switch"
+                    ><input name="q3" value="depends" type="radio" />
+                    <span>Depends</span></label
+                  >
+                </div>
+              </div>
+              <div class="field">
+                <label class="label">Is the thrift market big on campus?</label>
+                <input id="q4" type="text" placeholder="Your take..." />
+              </div>
+              <div class="field">
+                <label class="label">Any suggestions</label>
+                <textarea
+                  id="q5"
+                  rows="3"
+                  placeholder="Feature requests, categories, safety ideas..."
+                ></textarea>
+              </div>
+              <div class="row">
+                <button class="btn success" type="submit">Submit</button>
+                <div id="survey-status" class="hint"></div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Admin view -->
+        <section class="panel view" id="admin">
+          <div class="panel-header">
+            <div>Admin dashboard</div>
+            <div class="muted" style="font-size: 12px">
+              Moderate flagged posts
+            </div>
+          </div>
+          <div class="panel-body">
+            <div id="admin-cards" class="cards"></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modals -->
+    <div class="modal-backdrop" id="login-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>Sign in</div>
+          <button class="close" data-close="#login-modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <div class="field">
+            <label class="label"
+              >Continue with college email (simulated Google login)</label
+            >
+            <input id="m-email" type="text" placeholder="you@thapar.edu" />
+            <div class="hint">
+              For demo, any email works; use your college email to keep it real.
+            </div>
+          </div>
+          <div class="field">
+            <label class="label">Create username</label>
+            <input id="m-username" type="text" placeholder="Display name" />
+          </div>
+          <div class="row">
+            <button class="btn" id="m-google">Continue</button>
+          </div>
+          <div class="divider"></div>
+          <div class="field">
+            <label class="label">Or login via OTP</label>
+            <div class="row">
+              <input
+                id="m-phone"
+                type="tel"
+                placeholder="10-digit phone"
+                style="flex: 1"
+              />
+              <button class="btn secondary" id="m-send-otp">Send OTP</button>
+            </div>
+            <div class="row">
+              <input
+                id="m-otp"
+                type="text"
+                placeholder="Enter OTP"
+                style="flex: 1"
+              />
+              <button class="btn success" id="m-verify-otp">
+                Verify & Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-backdrop" id="chat-modal">
+      <div class="modal">
+        <div class="modal-header">
+          <div>Chat</div>
+          <button class="close" data-close="#chat-modal">Close</button>
+        </div>
+        <div class="modal-body">
+          <div id="chat-with" class="hint" style="margin-bottom: 8px"></div>
+          <div class="chat-box" id="chat-box"></div>
+          <div class="chat-input">
+            <input id="chat-text" type="text" placeholder="Type a message..." />
+            <button class="btn" id="chat-send">Send</button>
+          </div>
+          <div class="hint" id="phone-reveal">
+            Phone numbers are hidden until both consent.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+      // --- Utilities and storage ---
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => Array.from(document.querySelectorAll(s));
+      const store = {
+        get(k, def) {
+          try {
+            return JSON.parse(localStorage.getItem(k)) ?? def;
+          } catch {
+            return def;
+          }
+        },
+        set(k, v) {
+          localStorage.setItem(k, JSON.stringify(v));
+        },
+      };
+
+      // --- Demo data ---
+      const CATEGORIES = [
+        "Clothes",
+        "Electronics",
+        "Books",
+        "Cosmetics",
+        "Miscellaneous",
+      ];
+      const STATE = {
+        user: store.get("user", null),
+        items: store.get("items", []),
+        chats: store.get("chats", {}), // key: threadId -> [{from,text,time}]
+        flags: store.get("flags", []), // itemIds
+        filters: {
+          q: "",
+          cat: "",
+          cond: "",
+          hostel: "",
+          min: null,
+          max: null,
+          freeOnly: false,
+          sort: "latest",
+          comfortOnly: false,
+        },
+        location: store.get("location", null),
+        otp: null,
+        pendingPhone: null,
+        pendingLoginOTP: null,
+      };
+
+      // Seed some demo items if empty
+      if (STATE.items.length === 0) {
+        const demo = [
+          {
+            title: "Oversized Hoodie (M)",
+            cat: "Clothes",
+            cond: "used",
+            price: 399,
+            free: false,
+            desc: "Cozy, minimal wear.",
+            photos: [],
+            hostel: "girls",
+            comfort: "same",
+            boost: true,
+            owner: "Aarushi",
+            ownerEmail: "aarushi@thapar.edu",
+            ownerPhoneVerified: false,
+            createdAt: Date.now() - 1000 * 60 * 60 * 6,
+          },
+          {
+            title: "Casio fx-991EX",
+            cat: "Electronics",
+            cond: "unused",
+            price: 800,
+            free: false,
+            desc: "Boxed, untouched.",
+            photos: [],
+            hostel: "boys",
+            comfort: "any",
+            boost: false,
+            owner: "Karan",
+            ownerEmail: "karan@thapar.edu",
+            ownerPhoneVerified: true,
+            createdAt: Date.now() - 1000 * 60 * 60 * 20,
+          },
+          {
+            title: "Discrete Math Book",
+            cat: "Books",
+            cond: "used",
+            price: 0,
+            free: true,
+            desc: "Free for pickup.",
+            photos: [],
+            hostel: "boys",
+            comfort: "any",
+            boost: false,
+            owner: "Ritika",
+            ownerEmail: "ritika@thapar.edu",
+            ownerPhoneVerified: false,
+            createdAt: Date.now() - 1000 * 60 * 60 * 2,
+          },
+          {
+            title: "Skincare Bundle",
+            cat: "Cosmetics",
+            cond: "unused",
+            price: 499,
+            free: false,
+            desc: "Sealed items.",
+            photos: [],
+            hostel: "girls",
+            comfort: "same",
+            boost: true,
+            owner: "Meera",
+            ownerEmail: "meera@thapar.edu",
+            ownerPhoneVerified: true,
+            createdAt: Date.now() - 1000 * 60 * 30,
+          },
+        ];
+        STATE.items = demo.map((d, i) => ({ id: "i" + (i + 1), ...d }));
+        store.set("items", STATE.items);
+      }
+
+      // --- Rendering helpers ---
+      function toast(msg, ms = 2000) {
+        const t = $("#toast");
+        t.textContent = msg;
+        t.style.display = "block";
+        setTimeout(() => (t.style.display = "none"), ms);
+      }
+
+      function setActiveView(name) {
+        $$(".view").forEach((v) => v.classList.remove("active"));
+        if (name === "home") {
+          $("#filters").classList.add("active");
+        }
+        $("#" + name).classList.add("active");
+        $$("#nav-tabs .tab").forEach((t) =>
+          t.classList.toggle("active", t.dataset.view === name)
+        );
+        if (name === "home") renderCards();
+        if (name === "profile") renderProfile();
+        if (name === "admin") renderAdmin();
+      }
+
+      function humanPrice(p, free) {
+        return free || p === 0 ? "Free" : "₹" + Number(p).toLocaleString();
+      }
+
+      function ensureAuth(required = true) {
+        if (!STATE.user && required) {
+          $("#login-modal").style.display = "flex";
+          return false;
+        }
+        return true;
+      }
+
+      // --- Filters UI ---
+      function renderCategories() {
+        const row = $("#cat-row");
+        row.innerHTML = "";
+        const all = document.createElement("button");
+        all.className =
+          "chip-toggle" + (STATE.filters.cat === "" ? " active" : "");
+        all.textContent = "All";
+        all.onclick = () => {
+          STATE.filters.cat = "";
+          renderCategories();
+          renderCards();
+        };
+        row.appendChild(all);
+        CATEGORIES.forEach((c) => {
+          const b = document.createElement("button");
+          b.className =
+            "chip-toggle" + (STATE.filters.cat === c ? " active" : "");
+          b.textContent = c;
+          b.onclick = () => {
+            STATE.filters.cat = STATE.filters.cat === c ? "" : c;
+            renderCategories();
+            renderCards();
+          };
+          row.appendChild(b);
+        });
+      }
+
+      function attachFilterButtons() {
+        $$("#filters [data-cond]").forEach((b) => {
+          b.onclick = () => {
+            STATE.filters.cond = b.dataset.cond;
+            $$("#filters [data-cond]").forEach((x) =>
+              x.classList.remove("active")
+            );
+            b.classList.add("active");
+            renderCards();
+          };
+        });
+        $$("#filters [data-hostel]").forEach((b) => {
+          b.onclick = () => {
+            STATE.filters.hostel = b.dataset.hostel;
+            $$("#filters [data-hostel]").forEach((x) =>
+              x.classList.remove("active")
+            );
+            b.classList.add("active");
+            renderCards();
+          };
+        });
+        $("#q").oninput = (e) => {
+          STATE.filters.q = e.target.value.trim().toLowerCase();
+          renderCards();
+        };
+        $("#minPrice").oninput = (e) => {
+          STATE.filters.min = e.target.value ? Number(e.target.value) : null;
+          renderCards();
+        };
+        $("#maxPrice").oninput = (e) => {
+          STATE.filters.max = e.target.value ? Number(e.target.value) : null;
+          renderCards();
+        };
+        $("#freeOnly").onchange = (e) => {
+          STATE.filters.freeOnly = e.target.checked;
+          renderCards();
+        };
+        $("#sortBy").onchange = (e) => {
+          STATE.filters.sort = e.target.value;
+          renderCards();
+        };
+        $("#filterComfort").onchange = (e) => {
+          STATE.filters.comfortOnly = e.target.checked;
+          renderCards();
+        };
+        $("#clear-filters").onclick = () => {
+          STATE.filters = {
+            q: "",
+            cat: "",
+            cond: "",
+            hostel: "",
+            min: null,
+            max: null,
+            freeOnly: false,
+            sort: "latest",
+            comfortOnly: false,
+          };
+          $("#q").value = "";
+          $("#minPrice").value = "";
+          $("#maxPrice").value = "";
+          $("#freeOnly").checked = false;
+          $("#sortBy").value = "latest";
+          $("#filterComfort").checked = false;
+          renderCategories(); // resets cat UI
+          $$("#filters [data-cond]").forEach((x, i) =>
+            x.classList.toggle("active", i === 0)
+          );
+          $$("#filters [data-hostel]").forEach((x, i) =>
+            x.classList.toggle("active", i === 0)
+          );
+          renderCards();
+        };
+      }
+
+      // --- Cards ---
+      function filterItems() {
+        const f = STATE.filters;
+        const me = STATE.user;
+        let arr = [...STATE.items];
+        if (f.q)
+          arr = arr.filter((i) =>
+            (i.title + i.desc).toLowerCase().includes(f.q)
+          );
+        if (f.cat) arr = arr.filter((i) => i.cat === f.cat);
+        if (f.cond) arr = arr.filter((i) => i.cond === f.cond);
+        if (f.hostel) arr = arr.filter((i) => i.hostel === f.hostel);
+        if (f.freeOnly) arr = arr.filter((i) => i.free || i.price === 0);
+        if (f.min != null)
+          arr = arr.filter((i) => (i.free ? 0 : i.price) >= f.min);
+        if (f.max != null)
+          arr = arr.filter((i) => (i.free ? 0 : i.price) <= f.max);
+        if (f.comfortOnly && me) {
+          const pref = me.comfort || "any";
+          if (pref === "same" && me.hostel) {
+            arr = arr.filter((i) =>
+              i.comfort === "same" ? i.hostel === me.hostel : true
+            );
+          }
+        }
+        // Sorting
+        if (f.sort === "latest") arr.sort((a, b) => b.createdAt - a.createdAt);
+        if (f.sort === "boost")
+          arr.sort((a, b) => b.boost - a.boost || b.createdAt - a.createdAt);
+        if (f.sort === "priceAsc")
+          arr.sort((a, b) => (a.free ? 0 : a.price) - (b.free ? 0 : b.price));
+        if (f.sort === "priceDesc")
+          arr.sort((a, b) => (b.free ? 0 : b.price) - (a.free ? 0 : a.price));
+        return arr;
+      }
+
+      function cardHTML(i) {
+        const price = humanPrice(i.price, i.free);
+        const meta = `${i.cat} • ${i.cond === "used" ? "Used" : "Unused"} • ${
+          i.hostel === "boys" ? "Boys hostel" : "Girls hostel"
+        }`;
+        return `
+        <div class="card">
+          <div class="thumb">
+            <span>${i.cat}</span>
+            <span class="badge">${i.hostel}</span>
+            ${i.boost ? '<span class="badge boost">Boosted</span>' : ""}
+          </div>
+          <div class="content">
+            <div class="title">${i.title}</div>
+            <div class="meta">${meta}</div>
+            <div class="price">${price}</div>
+            <div class="actions">
+              <button class="btn secondary" data-action="details" data-id="${
+                i.id
+              }">Details</button>
+              <button class="btn" data-action="chat" data-id="${
+                i.id
+              }">Chat</button>
+              <button class="btn secondary" data-action="flag" data-id="${
+                i.id
+              }">Report</button>
+              ${
+                STATE.user && STATE.user.email === i.ownerEmail
+                  ? `
+                <button class="btn warning" data-action="boost" data-id="${i.id}">Boost</button>
+                <button class="btn danger" data-action="delete" data-id="${i.id}">Delete</button>`
+                  : ""
+              }
+            </div>
+          </div>
+        </div>`;
+      }
+
+      function renderCards() {
+        const cards = $("#cards");
+        const arr = filterItems();
+        $("#count-chip").textContent = `${arr.length} items`;
+        // insert an inline ad every 6 items
+        let html = "";
+        arr.forEach((i, idx) => {
+          html += cardHTML(i);
+          if ((idx + 1) % 6 === 0) {
+            html += `<div class="card">
+            <div class="content">
+              <div class="title">Sponsored</div>
+              <div class="meta">Boost your post to appear here.</div>
+              <div class="actions"><button class="btn warning" data-view="post">Boost now</button></div>
+            </div>
+          </div>`;
+          }
+        });
+        cards.innerHTML =
+          html || `<div class="muted">No items match your filters.</div>`;
+        // attach card actions
+        $$("#cards [data-action]").forEach((b) => {
+          const id = b.dataset.id;
+          b.onclick = () => {
+            const item = STATE.items.find((x) => x.id === id);
+            if (!item) return;
+            const act = b.dataset.action;
+            if (act === "chat") {
+              openChat(item);
+            }
+            if (act === "flag") {
+              flagItem(item);
+            }
+            if (act === "delete") {
+              deleteItem(item);
+            }
+            if (act === "boost") {
+              boostItem(item);
+            }
+            if (act === "details") {
+              details(item);
+            }
+          };
+        });
+        // attach ad boost
+        $$('#cards [data-view="post"]').forEach(
+          (b) => (b.onclick = () => setActiveView("post"))
+        );
+      }
+
+      function details(i) {
+        const msg = `${i.title}\nCategory: ${i.cat}\nCondition: ${
+          i.cond
+        }\nHostel: ${i.hostel}\nComfort: ${i.comfort}\nPrice: ${humanPrice(
+          i.price,
+          i.free
+        )}\n\n${i.desc || ""}`;
+        toast("Opened details in console");
+        console.log(msg);
+      }
+
+      function flagItem(i) {
+        if (!ensureAuth()) return;
+        if (STATE.flags.includes(i.id)) return toast("Already reported");
+        STATE.flags.push(i.id);
+        store.set("flags", STATE.flags);
+        toast("Reported to admin");
+        renderAdmin();
+      }
+
+      function deleteItem(i) {
+        if (!ensureAuth()) return;
+        if (STATE.user.email !== i.ownerEmail)
+          return toast("You can only delete your items");
+        STATE.items = STATE.items.filter((x) => x.id !== i.id);
+        store.set("items", STATE.items);
+        toast("Listing deleted");
+        renderCards();
+        renderProfile();
+        renderAdmin();
+      }
+
+      function boostItem(i) {
+        if (!ensureAuth()) return;
+        if (STATE.user.email !== i.ownerEmail)
+          return toast("You can only boost your items");
+        i.boost = true;
+        i.createdAt = Date.now();
+        store.set("items", STATE.items);
+        toast("Boosted to top");
+        renderCards();
+        renderProfile();
+      }
+
+      // --- Post form ---
+      function renderPostForm() {
+        const cat = $("#p-cat");
+        cat.innerHTML = CATEGORIES.map((c) => `<option>${c}</option>`).join("");
+        $("#p-free").onchange = (e) => {
+          if (e.target.checked) $("#p-price").value = 0;
+        };
+        $("#post-form").onsubmit = (e) => {
+          e.preventDefault();
+          if (!ensureAuth()) return;
+
+          const files = Array.from($("#p-photos").files || []).slice(0, 5);
+          // For demo, just store names; could convert to base64 if needed
+          const photos = files.map((f) => ({ name: f.name, size: f.size }));
+
+          const obj = {
+            id: "i" + Math.random().toString(36).slice(2, 9),
+            title: $("#p-title").value.trim(),
+            cat: $("#p-cat").value,
+            cond: $("#p-cond").value,
+            price: Number($("#p-price").value || 0),
+            free: $("#p-free").checked,
+            desc: $("#p-desc").value.trim(),
+            photos,
+            hostel: $("#p-hostel").value,
+            comfort: $("#p-comfort").value,
+            boost: $("#p-boost").checked,
+            sharePhone: $("#p-share-phone").checked,
+            owner: STATE.user.username,
+            ownerEmail: STATE.user.email,
+            ownerPhoneVerified: !!STATE.user.phoneVerified,
+            createdAt: Date.now(),
+          };
+          if (!obj.title) {
+            return toast("Enter a title");
+          }
+          if (!obj.free && (isNaN(obj.price) || obj.price < 0)) {
+            return toast("Enter valid price");
+          }
+
+          STATE.items.unshift(obj);
+          store.set("items", STATE.items);
+          toast("Listing published");
+          setActiveView("home");
+          e.target.reset();
+          renderCards();
+          renderProfile();
+        };
+      }
+
+      // --- Profile ---
+      function renderProfile() {
+        if (!STATE.user) {
+          $(
+            "#my-listings"
+          ).innerHTML = `<div class="muted">Sign in to see your listings.</div>`;
+          return;
+        }
+        $("#u-name").value = STATE.user.username || "";
+        $("#u-email").value = STATE.user.email || "";
+        $("#u-phone").value = STATE.user.phone || "";
+        $("#u-comfort").value = STATE.user.comfort || "any";
+        $("#otp-status").textContent = STATE.user.phoneVerified
+          ? "Phone verified"
+          : "Not verified";
+
+        $("#u-name").oninput = (e) => {
+          STATE.user.username = e.target.value;
+          saveUser();
+          refreshUserChip();
+          renderCards();
+          renderProfileListings();
+        };
+        $("#u-email").oninput = (e) => {
+          STATE.user.email = e.target.value;
+          saveUser();
+          refreshUserChip();
+        };
+        $("#u-comfort").onchange = (e) => {
+          STATE.user.comfort = e.target.value;
+          saveUser();
+          renderCards();
+        };
+
+        $("#btn-send-otp").onclick = () => {
+          const phone = $("#u-phone").value.trim();
+          if (!/^\d{10}$/.test(phone))
+            return toast("Enter valid 10-digit phone");
+          const code = String(Math.floor(1000 + Math.random() * 9000));
+          STATE.otp = code;
+          STATE.pendingPhone = phone;
+          toast("OTP sent: " + code); // demo
+        };
+        $("#btn-verify-otp").onclick = () => {
+          const code = $("#u-otp").value.trim();
+          if (code && code === STATE.otp) {
+            STATE.user.phone = STATE.pendingPhone;
+            STATE.user.phoneVerified = true;
+            STATE.otp = null;
+            STATE.pendingPhone = null;
+            $("#otp-status").textContent = "Phone verified";
+            saveUser();
+            renderCards();
+            toast("Phone verified");
+          } else {
+            toast("Invalid OTP");
+          }
+        };
+        $("#btn-logout").onclick = () => {
+          STATE.user = null;
+          store.set("user", null);
+          refreshAuthUI();
+          setActiveView("home");
+          toast("Signed out");
+        };
+
+        renderProfileListings();
+      }
+
+      function renderProfileListings() {
+        const wrap = $("#my-listings");
+        if (!STATE.user) {
+          wrap.innerHTML = "";
+          return;
+        }
+        const mine = STATE.items.filter(
+          (i) => i.ownerEmail === STATE.user.email
+        );
+        wrap.innerHTML =
+          mine.map((i) => cardHTML(i)).join("") ||
+          `<div class="muted">No listings yet. Create your first post!</div>`;
+        // attach actions inside
+        $$("#my-listings [data-action]").forEach((b) => {
+          const id = b.dataset.id;
+          b.onclick = () => {
+            const item = STATE.items.find((x) => x.id === id);
+            if (!item) return;
+            const act = b.dataset.action;
+            if (act === "chat") {
+              openChat(item);
+            }
+            if (act === "flag") {
+              flagItem(item);
+            }
+            if (act === "delete") {
+              deleteItem(item);
+            }
+            if (act === "boost") {
+              boostItem(item);
+            }
+            if (act === "details") {
+              details(item);
+            }
+          };
+        });
+      }
+
+      // --- Login modal (simulated Google & OTP) ---
+      function refreshAuthUI() {
+        if (STATE.user) {
+          $("#user-chip").textContent = STATE.user.username || "User";
+          $("#btn-login").style.display = "none";
+        } else {
+          $("#user-chip").textContent = "Guest";
+          $("#btn-login").style.display = "inline-flex";
+        }
+        store.set("user", STATE.user);
+      }
+      function refreshUserChip() {
+        $("#user-chip").textContent = STATE.user
+          ? STATE.user.username || "User"
+          : "Guest";
+      }
+
+      function attachLogin() {
+        $("#btn-login").onclick = () =>
+          ($("#login-modal").style.display = "flex");
+        $$("#login-modal [data-close]").forEach(
+          (b) => (b.onclick = () => ($(b.dataset.close).style.display = "none"))
+        );
+
+        $("#m-google").onclick = () => {
+          const email = $("#m-email").value.trim();
+          const username = $("#m-username").value.trim() || "Student";
+          if (!email) return toast("Enter email");
+          STATE.user = {
+            username,
+            email,
+            comfort: "any",
+            hostel: "",
+            phoneVerified: false,
+          };
+          refreshAuthUI();
+          $("#login-modal").style.display = "none";
+          toast("Signed in");
+        };
+
+        $("#m-send-otp").onclick = () => {
+          const phone = $("#m-phone").value.trim();
+          if (!/^\d{10}$/.test(phone))
+            return toast("Enter valid 10-digit phone");
+          const code = String(Math.floor(1000 + Math.random() * 9000));
+          STATE.pendingLoginOTP = { phone, code };
+          toast("OTP sent: " + code); // demo
+        };
+        $("#m-verify-otp").onclick = () => {
+          const code = $("#m-otp").value.trim();
+          if (!STATE.pendingLoginOTP) return toast("Send OTP first");
+          if (code === STATE.pendingLoginOTP.code) {
+            STATE.user = {
+              username: "Student",
+              email: "otpuser@campus.local",
+              phone: STATE.pendingLoginOTP.phone,
+              phoneVerified: true,
+              comfort: "any",
+            };
+            refreshAuthUI();
+            $("#login-modal").style.display = "none";
+            toast("Signed in via OTP");
+            STATE.pendingLoginOTP = null;
+          } else {
+            toast("Invalid OTP");
+          }
+        };
+      }
+
+      // --- Admin ---
+      function renderAdmin() {
+        const wrap = $("#admin-cards");
+        const flagged = STATE.items.filter((i) => STATE.flags.includes(i.id));
+        if (flagged.length === 0) {
+          wrap.innerHTML = `<div class="muted">No flagged items.</div>`;
+          return;
+        }
+        wrap.innerHTML = flagged
+          .map(
+            (i) => `
+        <div class="card">
+          <div class="content">
+            <div class="title">Flagged: ${i.title}</div>
+            <div class="meta">${i.cat} • ${i.owner} (${i.ownerEmail})</div>
+            <div class="actions">
+              <button class="btn danger" data-admin="remove" data-id="${i.id}">Remove listing</button>
+              <button class="btn secondary" data-admin="dismiss" data-id="${i.id}">Dismiss</button>
+            </div>
+          </div>
+        </div>
+      `
+          )
+          .join("");
+        $$("#admin [data-admin]").forEach((b) => {
+          b.onclick = () => {
+            const id = b.dataset.id;
+            if (b.dataset.admin === "remove") {
+              STATE.items = STATE.items.filter((x) => x.id !== id);
+              STATE.flags = STATE.flags.filter((x) => x !== id);
+              store.set("items", STATE.items);
+              store.set("flags", STATE.flags);
+              toast("Listing removed");
+              renderAdmin();
+              renderCards();
+              renderProfile();
+            } else {
+              STATE.flags = STATE.flags.filter((x) => x !== id);
+              store.set("flags", STATE.flags);
+              toast("Report dismissed");
+              renderAdmin();
+            }
+          };
+        });
+      }
+
+      // --- Chat (mock) ---
+      let currentThread = null;
+      function threadId(item) {
+        const me = STATE.user ? STATE.user.email : "guest";
+        return [item.id, me, item.ownerEmail].sort().join("|");
+      }
+      function openChat(item) {
+        if (!ensureAuth()) return;
+        currentThread = threadId(item);
+        $(
+          "#chat-with"
+        ).textContent = `You’re chatting about “${item.title}” with ${item.owner}`;
+        $("#chat-modal").style.display = "flex";
+        const t = STATE.chats[currentThread] || [];
+        const box = $("#chat-box");
+        box.innerHTML = t
+          .map(
+            (m) =>
+              `<div class="msg ${
+                m.from === "me" ? "me" : ""
+              }"><div class="bubble">${m.text}</div></div>`
+          )
+          .join("");
+        box.scrollTop = box.scrollHeight;
+
+        const bothConsented = item.sharePhone && STATE.user.phoneVerified;
+        $("#phone-reveal").textContent = bothConsented
+          ? `Both consented. Seller: ${item.owner} • Phone: ${
+              STATE.user.phone || "N/A"
+            }`
+          : "Phone numbers are hidden until both consent.";
+        $("#chat-send").onclick = () => {
+          const txt = $("#chat-text").value.trim();
+          if (!txt) return;
+          const arr = STATE.chats[currentThread] || [];
+          arr.push({ from: "me", text: txt, time: Date.now() });
+          arr.push({
+            from: "them",
+            text: "Thanks for your message! (demo auto-reply)",
+            time: Date.now() + 500,
+          });
+          STATE.chats[currentThread] = arr;
+          store.set("chats", STATE.chats);
+          $("#chat-text").value = "";
+          openChat(item);
+        };
+        $$("#chat-modal [data-close]").forEach(
+          (b) => (b.onclick = () => ($("#chat-modal").style.display = "none"))
+        );
+      }
+
+      // --- Location sharing (approx) ---
+      $("#share-location").onclick = () => {
+        if (!navigator.geolocation) {
+          toast("Geolocation not supported");
+          return;
+        }
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            STATE.location = {
+              lat: pos.coords.latitude,
+              lon: pos.coords.longitude,
+              time: Date.now(),
+            };
+            store.set("location", STATE.location);
+            $(
+              "#loc-status"
+            ).textContent = `Shared • ${STATE.location.lat.toFixed(
+              3
+            )}, ${STATE.location.lon.toFixed(3)}`;
+            toast("Location shared");
+          },
+          (_) => {
+            toast("Location permission denied");
+          },
+          { enableHighAccuracy: false, timeout: 5000 }
+        );
+      };
+      if (STATE.location) {
+        $("#loc-status").textContent = `Shared • ${STATE.location.lat.toFixed(
+          3
+        )}, ${STATE.location.lon.toFixed(3)}`;
+      }
+
+      // --- Survey ---
+      $("#survey-form").onsubmit = (e) => {
+        e.preventDefault();
+        const data = {
+          q1: new FormData(e.target).get("q1") || "",
+          q2: new FormData(e.target).get("q2") || "",
+          q3: new FormData(e.target).get("q3") || "",
+          q4: $("#q4").value.trim(),
+          q5: $("#q5").value.trim(),
+          time: Date.now(),
+        };
+        const prev = store.get("survey", []);
+        prev.push(data);
+        store.set("survey", prev);
+        $("#survey-status").textContent = "Thanks for your input!";
+        toast("Survey submitted");
+        e.target.reset();
+      };
+
+      // --- Nav routing ---
+      $$("#nav-tabs .tab, [data-view]").forEach((el) => {
+        el.onclick = (e) => {
+          e.preventDefault();
+          const v = el.dataset.view;
+          if (v) setActiveView(v);
+        };
+      });
+
+      // --- Init ---
+      function init() {
+        renderCategories();
+        attachFilterButtons();
+        renderCards();
+        renderPostForm();
+        attachLogin();
+        refreshAuthUI();
+      }
+      init();
+    </script>
+  </body>
+</html>
